@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { randomUUID } from 'crypto';
 
 @Injectable()
-export class RabbitMQService {
+export class PdfProducerService {
   constructor(
     @Inject('PDF_QUEUE')
     private readonly pdfQueueClient: ClientProxy,

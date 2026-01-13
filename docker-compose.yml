@@ -1,13 +1,27 @@
-version: '3.8'
 services:
-  app:
-    build: .
+  api:
+    build: 
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: docstream-api
     ports:
       - '3000:3000'
     environment:
       - PORT=3000
-  radbitmq:
+    depends_on:
+      - rabbitmq
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: docstream-worker
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+  rabbitmq:
     image: 'rabbitmq:3-management'
+    container_name: docstream-rabbitmq
     ports:
       - '5672:5672'
       - '15672:15672'

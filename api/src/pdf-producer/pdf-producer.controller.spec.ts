@@ -1,19 +1,18 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
-import { RabbitMQController } from './rabbitmq.controller';
-import { RabbitMQService } from './rabbitmq.service';
+import { PdfProducerController } from './pdf-producer.controller';
+import { PdfProducerService } from './pdf-producer.service';
 import { BadRequestException } from '@nestjs/common';
 
-describe('RabbitMQController', () => {
-  let controller: RabbitMQController;
-  let service: RabbitMQService;
+describe('PdfProducerController', () => {
+  let controller: PdfProducerController;
+  let service: PdfProducerService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [RabbitMQController],
+      controllers: [PdfProducerController],
       providers: [
         {
-          provide: RabbitMQService,
+          provide: PdfProducerService,
           useValue: {
             publishPdfProcessing: jest.fn(),
           },
@@ -27,8 +26,8 @@ describe('RabbitMQController', () => {
       ],
     }).compile();
 
-    controller = module.get<RabbitMQController>(RabbitMQController);
-    service = module.get<RabbitMQService>(RabbitMQService);
+    controller = module.get<PdfProducerController>(PdfProducerController);
+    service = module.get<PdfProducerService>(PdfProducerService);
   });
 
   describe('uploadPdf', () => {

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { RabbitMQController } from './rabbitmq.controller';
-import { RabbitMQService } from './rabbitmq.service';
+import { PdfProducerController } from './pdf-producer.controller';
+import { PdfProducerService } from './pdf-producer.service';
 
 @Module({
   imports: [
@@ -21,8 +21,8 @@ import { RabbitMQService } from './rabbitmq.service';
       },
     ]),
   ],
-  controllers: [RabbitMQController],
-  providers: [RabbitMQService],
-  exports: [RabbitMQService],
+  controllers: [PdfProducerController],
+  providers: [PdfProducerService],
+  exports: [PdfProducerService],
 })
-export class RabbitMQModule {}
+export class PdfProducerModule {}
