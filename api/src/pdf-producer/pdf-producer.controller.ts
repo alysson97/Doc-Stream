@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Controller,
   Post,
@@ -7,11 +6,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { RabbitMQService } from './rabbitmq.service';
+import { PdfProducerService } from './pdf-producer.service';
 
 @Controller('pdf')
-export class RabbitMQController {
-  constructor(private readonly rabbitmqService: RabbitMQService) {}
+export class PdfProducerController {
+  constructor(private readonly PdfProducerService: PdfProducerService) {}
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
@@ -27,7 +26,7 @@ export class RabbitMQController {
       throw new BadRequestException('Apenas arquivos PDF são permitidos');
     }
 
-    const jobId = this.rabbitmqService.publishPdfProcessing(file);
+    const jobId = this.PdfProducerService.publishPdfProcessing(file);
 
     return {
       jobId,
