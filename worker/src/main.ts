@@ -7,9 +7,14 @@ async function bootstrap(): Promise<void> {
     AppModule,
     {
       transport: Transport.RMQ,
+      options: {
+        urls: ['amqp://docstream-rabbitmq:5672'],
+        queue: 'docstream-rabbitmq',
+      },
     },
   );
   // await app.listen(process.env.PORT ?? 3000);
   await app.listen();
+  console.log('Worker microservice is listening...');
 }
 void bootstrap();
