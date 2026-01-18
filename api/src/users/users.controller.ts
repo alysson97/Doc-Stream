@@ -9,8 +9,7 @@ import {
   Header,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -18,8 +17,8 @@ export class UsersController {
 
   @Post()
   @Header('Content-Type', 'application/json')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() body: Pick<User, 'username' | 'email' | 'password'>) {
+    return this.usersService.create(body.username, body.email, body.password);
   }
 
   @Get()
@@ -33,8 +32,8 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('id') id: string, @Body() body: Partial<User>) {
+    return this.usersService.update(+id, body);
   }
 
   @Delete(':id')

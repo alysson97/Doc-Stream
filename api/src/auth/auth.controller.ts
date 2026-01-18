@@ -5,12 +5,12 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
+  @Post('login')
   login(@Body('email') email: string, @Body('password') password: string) {
     return this.authService.login(email, password);
   }
 
-  @Post()
+  @Post('refresh')
   refresh(@Body('refreshToken') refreshToken: string) {
     return this.authService.refresh(refreshToken);
   }
