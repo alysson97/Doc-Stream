@@ -4,9 +4,10 @@ export class User {
     public username: string,
     public email: string,
     public password: string,
+    public role: 'user' | 'admin' = 'user',
     public readonly createdAt: Date,
-    public updatedAt: Date,
     public isActive: boolean,
+    public updatedAt?: Date,
   ) {}
 
   static create(props: {
@@ -22,9 +23,10 @@ export class User {
       props.username,
       props.email,
       props.password,
-      now,
+      'user',
       now,
       true,
+      now,
     );
   }
 
@@ -33,18 +35,20 @@ export class User {
     username: string;
     email: string;
     password: string;
+    role: 'user' | 'admin';
     createdAt: Date;
-    updatedAt: Date;
     isActive: boolean;
+    updatedAt?: Date;
   }): User {
     return new User(
       props.id,
       props.username,
       props.email,
       props.password,
+      props.role,
       props.createdAt,
-      props.updatedAt,
       props.isActive,
+      props.updatedAt,
     );
   }
 }
