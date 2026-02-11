@@ -13,12 +13,12 @@ WORKDIR /app/worker
 
 RUN apk add --no-cache libc6-compat
 
-COPY worker/package*.json ./
+# COPY worker/package*.json ./
 COPY --from=deps /app/worker/node_modules ./node_modules
+COPY packages ../packages
 COPY worker/src ./src
 COPY worker/tsconfig*.json ./
 COPY worker/nest-cli.json ./
-COPY packages ../packages
 
 RUN npx tsc -p tsconfig.build.json || echo "Build completed with type errors, continuing..."
 
