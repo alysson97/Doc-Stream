@@ -3,6 +3,12 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PdfProducerController } from './pdf-producer.controller';
 import { PdfProducerService } from './pdf-producer.service';
 
+const rabbitUrl = process.env.RABBITMQ_URL;
+
+if (!rabbitUrl) {
+  throw new Error('ERRO CRÍTICO: Variável de ambiente RABBITMQ_URL não definida.');
+}
+
 @Module({
   imports: [
     ClientsModule.register([
@@ -10,9 +16,7 @@ import { PdfProducerService } from './pdf-producer.service';
         name: 'PDF_QUEUE',
         transport: Transport.RMQ,
         options: {
-          urls: [
-            process.env.RABBITMQ_URL || 'amqp://guest:guest@rabbitmq:5672',
-          ],
+          urls: [rabbitUrl],
           queue: 'pdf_processing_queue',
           queueOptions: {
             durable: true,

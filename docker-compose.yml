@@ -7,9 +7,18 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - PORT=3000
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      RABBITMQ_URL: amqp://${RABBIT_USER}:${RABBIT_PASS}@rabbitmq:5672
+    restart: unless-stopped
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      db:
         condition: service_healthy
   worker:
     build:
@@ -17,22 +26,43 @@ services:
       dockerfile: worker/Dockerfile
     container_name: docstream-worker
     environment:
-      - RABBITMQ_HOST=rabbitmq
+      RABBITMQ_URL: amqp://${RABBIT_USER}:${RABBIT_PASS}@rabbitmq:5672
+    restart: unless-stopped
     depends_on:
       rabbitmq:
         condition: service_healthy
 
   rabbitmq:
-    image: 'rabbitmq:3-management'
+    image: 'rabbitmq:3-management-alpine'
     container_name: docstream-rabbitmq
+    restart: unless-stopped
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - '127.0.0.1:5672:5672'
+      - '127.0.0.1:15672:15672'
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASS}
     healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
       timeout: 5s
       retries: 10
+  db:
+    image: postgres:15-alpine
+    container_name: docstream-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+volumes:
+  postgres_data:
