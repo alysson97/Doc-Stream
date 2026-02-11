@@ -1,5 +1,5 @@
-import { Injectable, Inject, ConflictException } from '@nestjs/common';
-import type { UserRepository } from './repository/users.repository';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { UserRepository } from './repository/users.repository';
 import { User } from './entities/user.entity';
 import { ulid } from 'ulid';
 import * as bcrypt from 'bcrypt';
@@ -7,7 +7,6 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('UserRepository')
     private readonly userRepository: UserRepository,
   ) {}
   async create(username: string, email: string, password: string): Promise<User> {

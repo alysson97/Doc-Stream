@@ -1,17 +1,16 @@
 import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import type { UserRepository } from '../users/repository/users.repository';
 import * as bcrypt from 'bcrypt';
 import { Auth } from './entities/auth.entity';
 import { InMemoryAuthRepository } from './repository/auth.repository';
 import { ulid } from 'ulid';
+import { UsersService } from './../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject('UserRepository')
     private readonly authRepository: InMemoryAuthRepository,
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UsersService,
     private readonly jwtService: JwtService,
   ) {}
   async login(email: string, password: string) {
@@ -60,7 +59,21 @@ export class AuthService {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
+      // Revoke the old refresh token
       await this.authRepository.revokeToken(token);
+
+      const newRefreshToken = this.jwtService.sign(payload, { 
+        secret: process.env.JWT_REFRESH_SECRET,
+        expiresIn: '1d'
+      });
+
+      await this.authRepository.save(new Auth({
+        id: ulid(),
+        userId: payload.subject,
+        refreshToken: newRefreshToken,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        isRevoked: false
+      }));
 
       return {
         accessToken: this.jwtService.sign(
